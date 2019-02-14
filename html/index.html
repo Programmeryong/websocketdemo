@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>websocket测试</title>
+	<style type="text/css">
+		.thisinput{
+			height: 37px;
+			border: 1px solid rgba(0,0,0,.15);
+			border-radius: 2px;
+		}
+		.thisbtn{
+			display: inline-block;
+			padding: 8px 12px;
+			color: #fff;
+			border-radius: 2px;
+			background: #198cff;
+		}
+		.btn_false{
+			display: inline-block;
+			padding: 8px 12px;
+			color: #fff;
+			border-radius: 2px;
+			background: #FF3355;
+		}
+		.thisbox{
+			width: 500px;
+			height: 300px;
+			border: 1px solid #1a8cff;
+			border-radius: 2px;
+			margin-top: 30px;
+		}
+	</style>
+</head>
+<body>
+	<input class="thisinput" type="text" name="" placeholder="请输入内容">
+	<span class="thisbtn">发送</span>
+	<span class="btn_false">退出</span>
+	<p>websocket在线聊天室测试</p>
+	<ul class="thisbox"></ul>
+	<a href="http://www.miitbeian.gov.cn/">粤ICP备18088541号</a>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var ws = new WebSocket("ws://lixinyong.com:8848");//安全连接 如果是HTTP的话就用ws
+
+		ws.onopen = function(evt) { 
+		  $('.thisbtn').click(function(){
+		  		var val = $('.thisinput').val();
+		  		ws.send(val);
+		  		$('.thisinput').val('');
+		  })
+		  $('.btn_false').click(function(){
+		  		ws.close();
+		  })
+		};
+
+		ws.onmessage = function(evt) {
+			var data = JSON.parse(evt.data);
+		  	$('.thisbox').append("<li>"+data.name+":"+data.msg+"-----"+data.time+"</li>");
+		};
+
+		ws.onerror = function() {
+		    $('.thisbox').append("<li>聊天系统错误！</li>");
+		};
+
+		ws.onclose = function(evt) {
+		  $('.thisbox').append("<li>聊天系统关闭！</li>");
+		}; 
+
+		//回车触发点击查找按钮
+        $(".thisinput").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $('.thisbtn').click();
+            }
+        });
+	})
+</script>
+</html>
